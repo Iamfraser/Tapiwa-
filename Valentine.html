@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>For Tapiwa💖</title>
+
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    background: radial-gradient(circle at top, #ffe6f0, #ffb3d9);
+    font-family: "Georgia", serif;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .container {
+    max-width: 650px;
+    padding: 25px;
+  }
+
+  p {
+    font-size: 1.25em;
+    line-height: 1.8;
+    color: #444;
+    min-height: 280px;
+  }
+
+  h1 {
+    font-size: 2.6em;
+    color: #ff2f7a;
+    margin-bottom: 20px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 20px;
+    position: relative;
+  }
+
+  button {
+    font-size: 1.2em;
+    padding: 14px 34px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  #yes {
+    background: #ff2f7a;
+    color: white;
+  }
+
+  #yes:hover {
+    transform: scale(1.1);
+  }
+
+  #no {
+    background: #aaa;
+    color: white;
+    position: relative;
+  }
+
+  #question {
+    display: none;
+  }
+
+  #celebration {
+    display: none;
+    font-size: 2em;
+    margin-top: 25px;
+    color: #ff2f7a;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 20px;
+    animation: float 6s linear infinite;
+  }
+
+  @keyframes float {
+    from { transform: translateY(100vh); opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+  }
+
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+
+<body>
+
+<canvas id="confetti"></canvas>
+<canvas id="fireworks"></canvas>
+
+<div class="container">
+
+  <p id="typewriter"></p>
+
+  <div id="question">
+    <h1>Will you be my Valentine? 💘</h1>
+    <div class="buttons">
+      <button id="yes" onclick="celebrate()">Yes 💖</button>
+      <button id="no">No 😅</button>
+    </div>
+  </div>
+
+  <div id="celebration">
+    🎆 You mean more to me than you know 💕
+  </div>
+
+</div>
+
+<audio id="music" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c8a73467.mp3" preload="auto"></audio>
+
+<script>
+/* TYPEWRITER POEM */
+const poemText = `Tapiwa,
+
+Some people walk into your life quietly,
+and somehow everything begins to change.
+
+Your presence feels/felt gentle and safe,
+your smile has a way of easing my worries,
+and your laugh stays with me long after the moment passes.
+
+I admire the way you are 
+your beauty, your kindness,
+and the warmth you carry without even trying.
+
+Being around you feels natural,
+like something my heart already understands.
+And I realized I didn’t want to keep this unspoken anymore…
+
+So here I am, hoping you feel it too.`;
+
+let index = 0;
+const speed = 40;
+const typeTarget = document.getElementById("typewriter");
+
+function typeWriter() {
+  if (index < poemText.length) {
+    typeTarget.innerHTML += poemText.charAt(index);
+    index++;
+    setTimeout(typeWriter, speed);
+  } else {
+    document.getElementById("question").style.display = "block";
+  }
+}
+
+typeWriter();
+
+
+/* NO BUTTON RUNS AWAY */
+const noBtn = document.getElementById("no");
+noBtn.addEventListener("mouseover", () => {
+  noBtn.style.transform = `translate(${Math.random()*120-60}px, ${Math.random()*80-40}px)`;
+});
+
+
+/* FLOATING HEARTS */
+function createHeart() {
+  const heart = document.createElement("div");
+  heart.className = "heart";
+  heart.innerHTML = "💖";
+  heart.style.left = Math.random() * 100 + "vw";
+  document.body.appendChild(heart);
+  setTimeout(() => heart.remove(), 6000);
+}
+setInterval(createHeart, 400);
+
+
+/* CONFETTI */
+const confettiCanvas = document.getElementById("confetti");
+const cctx = confettiCanvas.getContext("2d");
+confettiCanvas.width = window.innerWidth;
+confettiCanvas.height = window.innerHeight;
+let confetti = [];
+
+function startConfetti() {
+  for (let i = 0; i < 200; i++) {
+    confetti.push({
+      x: Math.random() * confettiCanvas.width,
+      y: Math.random() * confettiCanvas.height,
+      size: Math.random() * 8 + 4,
+      speed: Math.random() * 3 + 2
+    });
+  }
+  animateConfetti();
+}
+
+function animateConfetti() {
+  cctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+  confetti.forEach(p => {
+    cctx.fillRect(p.x, p.y, p.size, p.size);
+    p.y += p.speed;
+    if (p.y > confettiCanvas.height) p.y = 0;
+  });
+  requestAnimationFrame(animateConfetti);
+}
+
+
+/* FIREWORKS */
+const fwCanvas = document.getElementById("fireworks");
+const fctx = fwCanvas.getContext("2d");
+fwCanvas.width = window.innerWidth;
+fwCanvas.height = window.innerHeight;
+let fireworks = [];
+
+function createFirework() {
+  const x = Math.random() * fwCanvas.width;
+  const y = Math.random() * fwCanvas.height / 2;
+  for (let i = 0; i < 50; i++) {
+    fireworks.push({
+      x, y,
+      dx: Math.cos(i) * Math.random() * 5,
+      dy: Math.sin(i) * Math.random() * 5,
+      life: 60
+    });
+  }
+}
+
+function animateFireworks() {
+  fctx.clearRect(0, 0, fwCanvas.width, fwCanvas.height);
+  fireworks.forEach((f, i) => {
+    fctx.fillRect(f.x, f.y, 3, 3);
+    f.x += f.dx;
+    f.y += f.dy;
+    f.life--;
+    if (f.life <= 0) fireworks.splice(i, 1);
+  });
+  requestAnimationFrame(animateFireworks);
+}
+
+
+/* YES BUTTON */
+function celebrate() {
+  document.getElementById("celebration").style.display = "block";
+  document.getElementById("music").play();
+  startConfetti();
+  setInterval(createFirework, 700);
+  animateFireworks();
+}
+</script>
+
+</body>
+</html>
